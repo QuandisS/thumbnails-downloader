@@ -1,0 +1,14 @@
+syntax = "proto3";
+option go_package = "github.com/QuandisS/thumbnail-downloader/downloader";
+
+service Downloader {
+    rpc Download(DownloadRequest) returns (DownloadResponse) {}
+}
+
+message DownloadRequest {
+    string url = 1;
+}
+
+message DownloadResponse {
+    bytes image_data = 1;
+}
