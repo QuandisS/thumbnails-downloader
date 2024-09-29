@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"thumbnails-downloader/pkg/downloader_v1/api/downloader_v1"
+	"thumbnails-downloader/internal/downloader"
+	dlproxy "thumbnails-downloader/pkg/downloader_v1"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -14,14 +15,20 @@ import (
 const port = 9091
 
 type server struct {
-	downloader_v1.UnimplementedDownloaderServer
+	dlproxy.UnimplementedDownloaderServer
 }
 
-func (s *server) Download(ctx context.Context, req *downloader_v1.DownloadRequest) (*downloader_v1.DownloadResponse, error) {
+func (s *server) Download(ctx context.Context, req *dlproxy.DownloadRequest) (*dlproxy.DownloadResponse, error) {
 	log.Println("Download: ", req.Url)
 
-	return &downloader_v1.DownloadResponse{
-		ImageData: []byte("image data"),
+	imgData, err := downloader.DowloadThumbnail(req.Url)
+	if err != nil {
+		log.Printf("Failed to download thumbnail: %v", err)
+		return nil, fmt.Errorf("failed to download thumbnail: %w", err)
+	}
+
+	return &dlproxy.DownloadResponse{
+		ImageData: imgData,
 	}, nil
 }
 
@@ -33,7 +40,7 @@ func main() {
 
 	s := grpc.NewServer()
 	reflection.Register(s)
-	downloader_v1.RegisterDownloaderServer(s, &server{})
+	dlproxy.RegisterDownloaderServer(s, &server{})
 
 	log.Println("Server listening on address: ", lis.Addr().String())
 
