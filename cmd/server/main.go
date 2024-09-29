@@ -5,14 +5,13 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 	"thumbnails-downloader/internal/downloader"
 	dlproxy "thumbnails-downloader/pkg/downloader_v1"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
-
-const port = 9091
 
 type server struct {
 	dlproxy.UnimplementedDownloaderServer
@@ -34,7 +33,7 @@ func (s *server) Download(ctx context.Context, req *dlproxy.DownloadRequest) (*d
 }
 
 func main() {
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", os.Getenv("PORT")))
 	if err != nil {
 		log.Fatal(err)
 	}
