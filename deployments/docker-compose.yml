@@ -1,0 +1,32 @@
+services:
+  redis:
+    image: redis:7.4.0-alpine
+    ports:
+      - 6379:6379
+    command: redis-server --save 20 1 --loglevel warning --requirepass redispassword
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-a", "redispassword", "ping" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.10'
+          memory: 256M
+    restart: unless-stopped
+
+  server:
+    depends_on:
+      - redis
+    build:
+      context: .
+      dockerfile: build/server/Dockerfile
+    ports:
+      - 9091:9091
+    environment:
+      - TTL=60s
