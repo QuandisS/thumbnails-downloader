@@ -51,6 +51,9 @@ func getVideoID(vidUrl string) (string, error) {
 
 	parts := strings.Split(u.Path, "/")
 	if len(parts) > 1 {
+		if parts[1] == "shorts" {
+			return parts[2], nil
+		}
 		return parts[1], nil
 	}
 
