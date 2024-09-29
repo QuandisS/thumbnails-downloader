@@ -5,6 +5,8 @@ It consists of 3 elements:
 3. Redis (as a cache)
 
 ## Usage
+**0.** **Prerequisites**  
+At this point you need **golang, docker, docker-compose** have been installed on your machine (*planned*: run client through docker, mount an out dir and connect to cli)  
 **1.** Start a server and Redis:
 ```
 cd deployments
@@ -26,3 +28,5 @@ Usage: client [--out <dir>] [--address <server-address>] [--async] [--timeout <t
       --out string       Output directory (default ".")
       --timeout int      Timeout for requests in seconds (default 10)
 ```
+---
+You can also check `deployments/docker-compose.yml` if something went wrong with ports or you want to change cache TTL
