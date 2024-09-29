@@ -21,9 +21,9 @@ type Downloader struct {
 
 func NewDownloader() *Downloader {
 	rclient := redis.NewClient(&redis.Options{
-		Addr:     "redis:6379",
-		Password: "redispassword", // no password set
-		DB:       0,               // use default DB
+		Addr:     os.Getenv("REDIS_ADDR"),
+		Password: os.Getenv("REDIS_PASSWORD"), // no password set
+		DB:       0,                           // use default DB
 	})
 
 	ttl, ok := os.LookupEnv("TTL")
@@ -65,7 +65,7 @@ func (d *Downloader) DowloadThumbnail(vidUrl string) ([]byte, error) {
 
 	imgData, err := d.redclient.Get(context.Background(), vidId).Bytes()
 	if err == nil {
-		log.Println("Using cached thumbnail")
+		log.Println("Using cached thumbnail for:", vidId)
 		return imgData, nil
 	}
 
@@ -82,7 +82,7 @@ func (d *Downloader) DowloadThumbnail(vidUrl string) ([]byte, error) {
 		return nil, fmt.Errorf("failed to read image data: %w", err)
 	}
 
-	log.Println("Caching thumbnail")
+	log.Println("Caching thumbnail:", vidId)
 	err = d.redclient.Set(context.Background(), vidId, imgData, d.ttl).Err()
 	if err != nil {
 		return nil, fmt.Errorf("failed to cache thumbnail: %w", err)

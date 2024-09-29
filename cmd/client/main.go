@@ -3,9 +3,11 @@ package main
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"log"
 	"os"
+	"sync"
 	downloader "thumbnails-downloader/pkg/downloader_v1"
 	"time"
 
@@ -32,25 +34,56 @@ func main() {
 
 	client := downloader.NewDownloaderClient(grpcClient)
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(viper.GetInt("timeout"))*time.Second)
-	defer cancel()
+	wg := &sync.WaitGroup{}
+	for i, url := range pflag.Args() {
+		if viper.GetBool("async") {
+			wg.Add(1)
+			go func(url string, wg *sync.WaitGroup) {
+				defer wg.Done()
+				ctx, cancel := context.WithTimeout(context.Background(), time.Duration(viper.GetInt("timeout"))*time.Second)
+				defer cancel()
+				r, err := client.Download(ctx, &downloader.DownloadRequest{
+					Url: url})
 
-	r, err := client.Download(ctx, &downloader.DownloadRequest{
-		Url: pflag.Arg(0)})
+				if err != nil {
+					log.Fatal("Failed to download thumbnail: ", err)
+				}
 
-	if err != nil {
-		log.Fatal("Failed to download thumbnail: ", err)
+				outFile, err := os.Create(fmt.Sprintf("thumbnail_%d.jpg", i))
+				if err != nil {
+					log.Fatal(err)
+				}
+				defer outFile.Close()
+
+				_, err = io.Copy(outFile, bytes.NewReader(r.ImageData))
+
+				if err != nil {
+					log.Fatal(err)
+				}
+
+			}(url, wg)
+		} else {
+			ctx, cancel := context.WithTimeout(context.Background(), time.Duration(viper.GetInt("timeout"))*time.Second)
+			defer cancel()
+			r, err := client.Download(ctx, &downloader.DownloadRequest{
+				Url: url})
+
+			if err != nil {
+				log.Fatal("Failed to download thumbnail: ", err)
+			}
+
+			outFile, err := os.Create(fmt.Sprintf("thumbnail_%d.jpg", i))
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer outFile.Close()
+
+			_, err = io.Copy(outFile, bytes.NewReader(r.ImageData))
+
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
 	}
-
-	outFile, err := os.Create("thumbnail.jpg")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer outFile.Close()
-
-	_, err = io.Copy(outFile, bytes.NewReader(r.ImageData))
-
-	if err != nil {
-		log.Fatal(err)
-	}
+	wg.Wait()
 }
