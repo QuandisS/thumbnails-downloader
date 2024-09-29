@@ -1,5 +1,8 @@
 syntax = "proto3";
-option go_package = "github.com/QuandisS/thumbnail-downloader/downloader";
+
+package downloader_v1;
+
+option go_package = "thumbnail-downloader/pkg/downloader_v1;downloader_v1";
 
 service Downloader {
     rpc Download(DownloadRequest) returns (DownloadResponse) {}

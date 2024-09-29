@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v3.12.4
-// source: api/downloader.proto
+// source: api/downloader_v1/downloader.proto
 
-package downloader
+package downloader_v1
 
 import (
 	context "context"
@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Downloader_Download_FullMethodName = "/Downloader/Download"
+	Downloader_Download_FullMethodName = "/downloader_v1.Downloader/Download"
 )
 
 // DownloaderClient is the client API for Downloader service.
@@ -108,7 +108,7 @@ func _Downloader_Download_Handler(srv interface{}, ctx context.Context, dec func
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Downloader_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "Downloader",
+	ServiceName: "downloader_v1.Downloader",
 	HandlerType: (*DownloaderServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -117,5 +117,5 @@ var Downloader_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/downloader.proto",
+	Metadata: "api/downloader_v1/downloader.proto",
 }
