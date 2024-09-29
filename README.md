@@ -9,13 +9,11 @@ It consists of 3 elements:
 At this point you need **golang, docker, docker-compose** have been installed on your machine (*planned*: run client through docker, mount an out dir and connect to cli)  
 **1.** Start a server and Redis:
 ```
-cd deployments
 docker compose -f deployments/docker-compose.yml --project-directory ./ up --build
 ```
 Or you can use: `make start-server`  
 If you want to do a clean start (force rebuild and anon volumes renew):
 ```
-cd deployments
 docker compose -f deployments/docker-compose.yml --project-directory ./ up --force-recreate --renew-anon-volumes --build
 ```
 Or you can use: `make clean-start-server`

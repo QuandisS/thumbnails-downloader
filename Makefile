@@ -5,9 +5,7 @@ generate:
 	api/downloader_v1/downloader.proto
 
 clean-start-server:
-	cd deployments/
 	docker compose -f deployments/docker-compose.yml --project-directory ./ up --force-recreate --renew-anon-volumes --build
 
 start-server:
-	cd deployments/
 	docker compose -f deployments/docker-compose.yml --project-directory ./ up --build
