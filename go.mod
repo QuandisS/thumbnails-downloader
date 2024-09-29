@@ -1,6 +1,6 @@
 module thumbnails-downloader
 
-go 1.23.0
+go 1.23
 
 require github.com/spf13/viper v1.19.0
 
